@@ -25,7 +25,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "FreeRTOS/tasks.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -126,10 +126,7 @@ void start_autopilot_task(void *argument)
 {
   /* USER CODE BEGIN start_autopilot_task */
   /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
+  autopilot_task(argument);
   /* USER CODE END start_autopilot_task */
 }
 
@@ -144,10 +141,7 @@ void start_rx_task(void *argument)
 {
   /* USER CODE BEGIN start_rx_task */
   /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
+  rx_task(argument);
   /* USER CODE END start_rx_task */
 }
 
