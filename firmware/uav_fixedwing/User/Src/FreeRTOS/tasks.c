@@ -1,4 +1,5 @@
 #include "cmsis_os2.h"
+#include "usart.h"
 
 #include "Comm/uart_rx.h"
 #include "FreeRTOS/tasks.h"
@@ -13,6 +14,11 @@ void autopilot_task(void *argument) {
         ctrl_cmd_delta.delta_r = 0.0f;
         ctrl_cmd_delta.delta_t = 0.5f;
 
+        if (huart2.gState == HAL_UART_STATE_READY) {
+            HAL_UART_Transmit_DMA(&huart2, (uint8_t*)&ctrl_cmd_delta, 
+                                            sizeof(control_cmd_t));   
+        }
+        
         osDelay(10);
     }
 }
