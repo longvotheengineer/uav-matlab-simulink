@@ -36,7 +36,7 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-
+extern int temp_cnt;
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/

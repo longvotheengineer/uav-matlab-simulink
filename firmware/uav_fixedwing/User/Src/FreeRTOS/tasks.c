@@ -18,7 +18,7 @@ void autopilot_task(void *argument) {
             HAL_UART_Transmit_DMA(&huart2, (uint8_t*)&ctrl_cmd_delta, 
                                             sizeof(control_cmd_t));   
         }
-        
+
         osDelay(10);
     }
 }
