@@ -39,6 +39,7 @@ compile_commands.json
 
 # Ignores local IntelliSense cache
 .clangd/
+.clangd
 .cache/
 
 # --- RTOS & Debugger Artifacts ---
