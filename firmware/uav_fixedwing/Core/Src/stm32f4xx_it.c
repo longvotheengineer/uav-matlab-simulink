@@ -22,7 +22,7 @@
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "Comm/uart_rx.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -230,11 +230,7 @@ void USART2_IRQHandler(void)
   /* USER CODE END USART2_IRQn 0 */
   HAL_UART_IRQHandler(&huart2);
   /* USER CODE BEGIN USART2_IRQn 1 */
-  // check if IDLE flag is set, clear IDLE flag, trigger rx_task
-  if (__HAL_UART_GET_FLAG(&huart2, UART_FLAG_IDLE) != RESET) {
-      __HAL_UART_CLEAR_IDLEFLAG(&huart2);
-      uart_rx_handle(&huart2);
-  }
+
   /* USER CODE END USART2_IRQn 1 */
 }
 

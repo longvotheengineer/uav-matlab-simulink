@@ -6,7 +6,7 @@
 #define RX_BUFFER_SIZE 128
 
 extern uint8_t rx_buffer[RX_BUFFER_SIZE];
+extern volatile uint16_t rx_buffer_size;
 
 void uart_rx_init(void);
-void uart_rx_handle(UART_HandleTypeDef *huart);
 void uart_rx_parse(void);
