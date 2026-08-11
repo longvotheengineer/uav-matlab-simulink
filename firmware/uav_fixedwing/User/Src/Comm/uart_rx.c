@@ -1,12 +1,11 @@
 #include <string.h>
-#include "cmsis_os2.h"
 
 #include "Comm/uart_rx.h"
 #include "System/system_io.h"
 
-extern osThreadId_t rx_taskHandle;
-uint8_t rx_buffer[RX_BUFFER_SIZE];
+// osThreadId_t rx_taskHandle; this is already defined in freertos.c
 
+uint8_t rx_buffer[RX_BUFFER_SIZE];
 volatile uint16_t rx_buffer_size = 0;
 
 void uart_rx_init(void) {
