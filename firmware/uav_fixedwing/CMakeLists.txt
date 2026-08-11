@@ -44,7 +44,7 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 )
 
 # Find all .c files in User/Src subdirectory
-file(GLOB_RECURSE USER_SOURCES "User/Src/*.c")
+file(GLOB_RECURSE USER_SOURCES CONFIGURE_DEPENDS "User/Src/*.c")
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${USER_SOURCES}

@@ -2,7 +2,7 @@
 #include "cmsis_os2.h"
 
 #include "Comm/uart_rx.h"
-#include "Sensor/sensor.h"
+#include "System/system_io.h"
 
 extern osThreadId_t rx_taskHandle;
 uint8_t rx_buffer[RX_BUFFER_SIZE];
@@ -35,7 +35,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t size) {
 void uart_rx_parse(void) {
     if (rx_buffer[0] == 0xAA && 
         rx_buffer[1] == 0xFF &&
-        rx_buffer_size == sizeof(state_variable_t)) {
-        memcpy(&state_var_x, rx_buffer, sizeof(state_variable_t));
+        rx_buffer_size == sizeof(state_var_t)) {
+        memcpy(&state_var_x, rx_buffer, sizeof(state_var_t));
     }
 }

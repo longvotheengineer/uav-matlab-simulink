@@ -3,7 +3,7 @@
 
 #include "Comm/uart_rx.h"
 #include "FreeRTOS/tasks.h"
-#include "Sensor/sensor.h"
+#include "System/system_io.h"
 
 volatile HAL_StatusTypeDef tx_status = HAL_ERROR;
 
@@ -18,7 +18,7 @@ void autopilot_task(void *argument) {
 
         if (huart2.gState == HAL_UART_STATE_READY) {
             HAL_UART_Transmit_DMA(&huart2, (uint8_t*)&ctrl_cmd_delta,
-                                            sizeof(control_cmd_t));
+                                            sizeof(ctrl_cmd_t));
         }
 
         osDelay(10);
