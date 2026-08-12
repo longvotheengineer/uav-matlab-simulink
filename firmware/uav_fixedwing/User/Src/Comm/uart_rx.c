@@ -34,7 +34,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t size) {
 void uart_rx_parse(void) {
     if (rx_buffer[0] == 0xAA && 
         rx_buffer[1] == 0xFF &&
-        rx_buffer_size == sizeof(state_var_t)) {
-        memcpy(&state_var_x, rx_buffer, sizeof(state_var_t));
+        rx_buffer_size == sizeof(atpl_i_t)) {
+        memcpy(&atpl_i, rx_buffer, sizeof(atpl_i_t));
     }
 }

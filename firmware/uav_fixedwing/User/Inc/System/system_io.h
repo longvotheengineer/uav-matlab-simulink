@@ -4,7 +4,7 @@
 
 #pragma pack(push, 1)
 
-// 12 state variables
+// state variables - from uav to visualization/guidance/autopilot/wind_model
 typedef struct {
     uint8_t sync_1;         // expect 0xAA
     uint8_t sync_2;         // expect 0xFF
@@ -14,7 +14,19 @@ typedef struct {
     float p, q, r;          // angular rates in body frame (rad/s)
 } state_var_t;
 
-// 4 control commands
+// guidance commands - from guidance to autopilot
+typedef struct {
+    float psi_cmd;          // desired heading/yaw (rad)
+    float alt_cmd;          // desired altitude (m)
+} gdnc_cmd_t;
+
+// autopilot inputs - from uav/guidance to autopilot
+typedef struct {
+    state_var_t state_var_x;
+    gdnc_cmd_t gdnc_cmd;
+} atpl_i_t;
+
+// control commands - from autopilot to uav
 typedef struct {
     uint8_t sync_1;         // expect 0xAA
     uint8_t sync_2;         // expect 0xFF
@@ -24,6 +36,7 @@ typedef struct {
     float delta_t;          // throttle (0-1)
 } ctrl_cmd_t;
 
+// path visualization - from guidance to visualization
 // typedef struct {
 //     uint8_t sync_1;         // expect 0xAA
 //     uint8_t sync_2;         // expect 0xFF
@@ -31,9 +44,10 @@ typedef struct {
 //     float e_carrot;         // desired east position (m)
 //     float alt_carrot;       // desired altitude position (m)
 //     int traj_type;          // trajectory type (1: figure-8, 2: helix)
-// } path_cmd_t;
+// } path_visual_t;
 
 #pragma pack(pop)
 
-extern state_var_t state_var_x;
 extern ctrl_cmd_t ctrl_cmd_delta;
+
+extern atpl_i_t atpl_i;
