@@ -25,7 +25,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "FreeRTOS/tasks.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -61,6 +61,11 @@ const osThreadAttr_t rx_task_attributes = {
   .stack_size = 1024 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for system_io_mutex */
+osMutexId_t system_io_mutexHandle;
+const osMutexAttr_t system_io_mutex_attributes = {
+  .name = "system_io_mutex"
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -81,6 +86,9 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
 
   /* USER CODE END Init */
+  /* Create the mutex(es) */
+  /* creation of system_io_mutex */
+  system_io_mutexHandle = osMutexNew(&system_io_mutex_attributes);
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
@@ -126,10 +134,7 @@ void start_autopilot_task(void *argument)
 {
   /* USER CODE BEGIN start_autopilot_task */
   /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
+  autopilot_task(argument);
   /* USER CODE END start_autopilot_task */
 }
 
@@ -144,10 +149,7 @@ void start_rx_task(void *argument)
 {
   /* USER CODE BEGIN start_rx_task */
   /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
+  rx_task(argument);
   /* USER CODE END start_rx_task */
 }
 
