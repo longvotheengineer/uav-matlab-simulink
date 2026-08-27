@@ -1,6 +1,7 @@
 function update_uav_plot(pn_pe_pd, phi_theta_psi, ...
                          waypoints, num_waypoints, path_data, ...
                          obstacles, tree, num_nodes)
+
     persistent fig_handle ax patches traj_actual p_history ...
                last_update_time traj_desired d_history
 
@@ -43,36 +44,56 @@ function update_uav_plot(pn_pe_pd, phi_theta_psi, ...
         xlabel(ax, 'east (m)', 'FontWeight', 'bold');
         ylabel(ax, 'north (m)', 'FontWeight', 'bold');
         zlabel(ax, 'altitude (m)', 'FontWeight', 'bold');
-        
-        % draw 3d cylindrical obstacles
-        for k = 1:5
+
+%% draw obstacles
+        for k = 1:size(obstacles, 1)
             if obstacles(k, 3) > 0
+
                 [X, Y, Z] = cylinder(obstacles(k, 3), 20);
-                surf(ax, X + obstacles(k, 2), Y + obstacles(k, 1), Z * -obstacles(k, 4), ...
-                    'FaceColor', 'r', 'FaceAlpha', 0.2, 'EdgeColor', 'none', 'HandleVisibility', 'off');
-            
-                th_cyl = linspace(0, 2*pi, 20);
-                x_cap = obstacles(k, 2) + obstacles(k, 3) * cos(th_cyl);
-                y_cap = obstacles(k, 1) + obstacles(k, 3) * sin(th_cyl);
+
+                surf(ax, ...
+                    X + obstacles(k, 2), ...
+                    Y + obstacles(k, 1), ...
+                    Z * -obstacles(k, 4), ...
+                    'FaceColor', 'r', ...
+                    'FaceAlpha', 0.2, ...
+                    'EdgeColor', 'none', ...
+                    'HandleVisibility', 'off');
+
+                theta_cyl = linspace(0, 2 * pi, 20);
+
+                x_cap = obstacles(k, 2) + ...
+                    obstacles(k, 3) * cos(theta_cyl);
+
+                y_cap = obstacles(k, 1) + ...
+                    obstacles(k, 3) * sin(theta_cyl);
+
                 z_cap = -obstacles(k, 4) * ones(1, 20);
-                fill3(ax, x_cap, y_cap, z_cap, 'r', 'FaceAlpha', 0.2, 'EdgeColor', 'r', 'HandleVisibility', 'off'); 
+
+                fill3(ax, x_cap, y_cap, z_cap, 'r', ...
+                    'FaceAlpha', 0.2, ...
+                    'EdgeColor', 'r', ...
+                    'HandleVisibility', 'off');
             end
         end
-        
-        % draw the RRT exploration tree branches (gray lines)
+
+%% draw RRT tree
         for i = 2:num_nodes
             p_idx = tree(i, 4);
+
             if p_idx > 0
-                plot3(ax, [tree(i,2), tree(p_idx,2)], [tree(i,1), tree(p_idx,1)], ...
-                    [-tree(i,3), -tree(p_idx,3)], 'Color', [0.8 0.8 0.8], 'LineWidth', 0.5, 'HandleVisibility', 'off');
+                plot3(ax, ...
+                    [tree(i, 2), tree(p_idx, 2)], ...
+                    [tree(i, 1), tree(p_idx, 1)], ...
+                    [-tree(i, 3), -tree(p_idx, 3)], ...
+                    'Color', [0.8 0.8 0.8], ...
+                    'LineWidth', 0.5, ...
+                    'HandleVisibility', 'off');
             end
         end
 
 %% draw waypoints
         if num_waypoints > 1
-            % w_n = [waypoints(1:num_waypoints, 1); waypoints(1, 1)];
-            % w_e = [waypoints(1:num_waypoints, 2); waypoints(1, 2)];
-            % w_d = [waypoints(1:num_waypoints, 3); waypoints(1, 3)];
             w_n = waypoints(1:num_waypoints, 1);
             w_e = waypoints(1:num_waypoints, 2);
             w_d = waypoints(1:num_waypoints, 3);
@@ -88,13 +109,12 @@ function update_uav_plot(pn_pe_pd, phi_theta_psi, ...
             'LineWidth', 2.5, ...
             'DisplayName', 'desired path');
 
-        d_history = [];
-
         traj_actual = plot3(ax, pe, pn, alt, 'b-', ...
             'LineWidth', 1.5, ...
             'DisplayName', 'actual path');
 
         p_history = [pe; pn; alt];
+        d_history = [];
 
         legend(ax, 'Location', 'northeast');
 
@@ -138,8 +158,8 @@ function update_uav_plot(pn_pe_pd, phi_theta_psi, ...
 
         v_vtail = s * [ ...
             -2.5  0  0;
-            -3    0  0;
-            -3    0 -1;
+            -3     0  0;
+            -3     0 -1;
             -2.5  0 -1];
 
         f_vtail = [1 2 3 4];
@@ -179,34 +199,48 @@ function update_uav_plot(pn_pe_pd, phi_theta_psi, ...
         patches.v_vtail = v_vtail;
 
     else
-        % --- SIMULATION RESTART (HISTORY OVERLAY) FIX ---
-        % If the UAV teleports > 100 meters, inject a NaN to break the line
-        if norm(p_history(:, end) - [pe; pn; alt]) > 100
-            % 1. Inject NaN to break the physical lines (keeps history)
+
+%% detect simulation restart
+        current_pos = [pe; pn; alt];
+
+        if norm(p_history(:, end) - current_pos) > 100
+
             p_history(:, end + 1) = [NaN; NaN; NaN];
+
             if ~isempty(d_history)
                 d_history(:, end + 1) = [NaN; NaN; NaN];
             end
-            
-            % 2. Draw the NEW randomized tree branches for this run
+
+%% draw new RRT tree
             for i = 2:num_nodes
                 p_idx = tree(i, 4);
+
                 if p_idx > 0
-                    plot3(ax, [tree(i,2), tree(p_idx,2)], [tree(i,1), tree(p_idx,1)], ...
-                        [-tree(i,3), -tree(p_idx,3)], 'Color', [0.8 0.8 0.8], 'LineWidth', 0.5, 'HandleVisibility', 'off');
+                    plot3(ax, ...
+                        [tree(i, 2), tree(p_idx, 2)], ...
+                        [tree(i, 1), tree(p_idx, 1)], ...
+                        [-tree(i, 3), -tree(p_idx, 3)], ...
+                        'Color', [0.8 0.8 0.8], ...
+                        'LineWidth', 0.5, ...
+                        'HandleVisibility', 'off');
                 end
             end
-            
-            % 3. Draw the NEW active waypoints for this run
+
+%% draw new waypoints
             if num_waypoints > 1
                 w_n = waypoints(1:num_waypoints, 1);
                 w_e = waypoints(1:num_waypoints, 2);
                 w_d = waypoints(1:num_waypoints, 3);
-                plot3(ax, w_e, w_n, -w_d, 'r--o', 'LineWidth', 1.5, 'MarkerFaceColor', 'r', 'HandleVisibility', 'off');
+
+                plot3(ax, w_e, w_n, -w_d, 'r--o', ...
+                    'LineWidth', 1.5, ...
+                    'MarkerFaceColor', 'r', ...
+                    'HandleVisibility', 'off');
             end
         end
+
 %% update actual trajectory
-        p_history(:, end + 1) = [pe; pn; alt];
+        p_history(:, end + 1) = current_pos;
 
         set(traj_actual, ...
             'XData', p_history(1, :), ...
@@ -265,18 +299,12 @@ function update_uav_plot(pn_pe_pd, phi_theta_psi, ...
           0 0 -1] * r_body2ned * v')' + ...
         [pe, pn, alt];
 
-    set(patches.h_fuse, ...
-        'Vertices', tf(patches.v_fuse));
-
-    set(patches.h_wing, ...
-        'Vertices', tf(patches.v_wing));
-
-    set(patches.h_htail, ...
-        'Vertices', tf(patches.v_htail));
-
-    set(patches.h_vtail, ...
-        'Vertices', tf(patches.v_vtail));
+    set(patches.h_fuse,  'Vertices', tf(patches.v_fuse));
+    set(patches.h_wing,  'Vertices', tf(patches.v_wing));
+    set(patches.h_htail, 'Vertices', tf(patches.v_htail));
+    set(patches.h_vtail, 'Vertices', tf(patches.v_vtail));
 
 %% update visualization
     drawnow limitrate;
+
 end
